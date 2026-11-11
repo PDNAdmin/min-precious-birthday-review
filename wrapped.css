@@ -33,6 +33,9 @@
 .login-paper { margin-bottom: 4px; }
 .login-paper .input-line { letter-spacing: 0.03em; }
 .login-form .btn { margin-top: 18px; }
+.admin-toggle { display: block; margin: 16px auto 0; font-size: 19px; }
+.admin-email { margin-top: 22px; }
+.admin-email .f-label { display: block; margin-bottom: 8px; }
 .login-hint { text-align: center; font-size: 22px; color: var(--muted); margin: 14px 0 0; }
 .login-peek { position: absolute; bottom: -40px; right: max(2vw, calc(50% - 470px)); height: min(46svh, 420px); z-index: 1; transform: rotate(6deg); }
 

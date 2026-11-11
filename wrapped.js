@@ -140,12 +140,27 @@ function computeStats(rows) {
 }
 
 // ---------- LOGIN ----------
+const ADMINS = new Set([cfg.ownerEmail, ...(cfg.adminEmails || [])].map((e) => String(e).toLowerCase()));
+const allowed = (email) => ADMINS.has(String(email || "").toLowerCase());
+let adminMode = false;
+$(".admin-toggle").addEventListener("click", (e) => {
+  adminMode = !adminMode;
+  $(".admin-email").hidden = !adminMode;
+  $(".login-label").textContent = adminMode ? "Password" : "psst… what's the secret word?";
+  e.currentTarget.textContent = adminMode ? "← back to passcode" : "admin login";
+  $("#admin-email").required = adminMode;
+  (adminMode ? $("#admin-email") : $("#passcode")).focus();
+});
 async function boot() {
   $$("[data-ransom]").forEach((h) => ransomify(h, +h.dataset.ransom || 0));
   if (DEMO) { $(".demo-flag").hidden = false; $(".login-hint").hidden = false; return showLogin(); }
   try {
     await loadFirebase();
-    fb.A.onAuthStateChanged(fb.auth, (u) => (u && u.email === cfg.ownerEmail ? unlocked() : showLogin()));
+    fb.A.onAuthStateChanged(fb.auth, (u) => {
+      if (u && allowed(u.email)) return unlocked();
+      if (u) { toast(`${u.email} isn't on the admin list.`); fb.A.signOut(fb.auth); }
+      showLogin();
+    });
   } catch (e) {
     console.error(e);
     showLogin();
@@ -172,9 +187,14 @@ $("#login-form").addEventListener("submit", async (e) => {
   err.hidden = true; btn.disabled = true;
   try {
     if (DEMO) { if (pass.toLowerCase() !== "demo") throw new Error("bad"); await unlocked(); }
-    else await fb.A.signInWithEmailAndPassword(fb.auth, cfg.ownerEmail, pass);
-  } catch {
-    err.textContent = "nope 🙈 that's not it. try again?"; err.hidden = false;
+    else {
+      const email = adminMode ? $("#admin-email").value.trim().toLowerCase() : cfg.ownerEmail;
+      if (adminMode && !allowed(email)) throw new Error("not-admin");
+      await fb.A.signInWithEmailAndPassword(fb.auth, email, pass);
+    }
+  } catch (ex) {
+    err.textContent = ex?.message === "not-admin" ? "That email isn't on the admin list yet." : adminMode ? "Email or password is wrong. Try again?" : "nope 🙈 that's not it. try again?";
+    err.hidden = false;
     if (hasGsap) gsap.fromTo(".login-card", { x: -12 }, { x: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
   } finally { btn.disabled = false; }
 });

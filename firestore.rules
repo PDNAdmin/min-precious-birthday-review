@@ -4,8 +4,12 @@ service cloud.firestore {
 
     // Reviews: anyone can add one, only Precious can read them, nobody can edit or delete.
     match /responses/{id} {
+      // Add every admin email here too (same list as adminEmails in config.js).
       allow read: if request.auth != null
-                  && request.auth.token.email == "precious@curo.events";
+                  && request.auth.token.email in [
+                       "preciousdesk10@gmail.com",
+                       "abdulmalikasimiyu@gmail.com"
+                     ];
 
       allow create: if id.matches('r_[0-9]{10,20}')
         && request.resource.data.keys().hasOnly(

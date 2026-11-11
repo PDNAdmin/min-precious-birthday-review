@@ -41,11 +41,16 @@
       <h1 class="ransom w-title" data-ransom="0">Precious</h1>
       <h1 class="ransom w-title w-title-2" data-ransom="5">Wrapped</h1>
       <form class="login-form" id="login-form" autocomplete="off">
+        <div class="admin-email" hidden>
+          <label class="f-label" for="admin-email">Admin email</label>
+          <div class="paper login-paper"><input class="input-line" id="admin-email" type="email" autocomplete="username" placeholder="you@example.com" /></div>
+        </div>
         <label class="hand login-label" for="passcode">psst… what's the secret word?</label>
         <div class="paper login-paper"><input class="input-line" id="passcode" type="password" autocomplete="current-password" placeholder="type it here…" required /></div>
         <p class="form-error" role="alert" hidden></p>
         <button class="btn btn-primary btn-block" type="submit">Unlock my Wrapped <span aria-hidden="true">🔓</span></button>
         <p class="hand login-hint" hidden>demo passcode: <b>demo</b></p>
+        <button class="btn-link admin-toggle" type="button">admin login</button>
       </form>
     </div>
     <img class="cutout login-peek" src="assets/img/sticker-hero.webp" alt="" />

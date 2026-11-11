@@ -17,9 +17,12 @@ window.REVIEW_CONFIG = {
     projectId: "curo-precious",
     appId: "1:85583271165:web:db892e8e5ceb4c41959a94",
   },
-  // Precious's login for /wrapped: this email + the passcode she types.
-  ownerEmail: "precious@curo.events",
-  giftFrom: "your developer",
+  // Precious's login for /wrapped: she only types the passcode; this email is used behind the scenes.
+  ownerEmail: "preciousdesk10@gmail.com",
+  // Everyone allowed into /wrapped (Precious + admins). Admins use "Admin login" and type their own email.
+  // Keep this list in sync with firestore.rules.
+  adminEmails: ["preciousdesk10@gmail.com", "abdulmalikasimiyu@gmail.com"],
+  giftFrom: "Maleek(Your developer)",
   wrappedYear: 2026,
 
   site: "precious.curo.events",
