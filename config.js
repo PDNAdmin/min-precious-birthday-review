@@ -6,7 +6,7 @@ window.REVIEW_CONFIG = {
 
   // Paste the Google Apps Script web-app URL here (ends in /exec).
   // While empty, submissions are only saved in the browser (demo mode).
-  endpoint: "",
+  endpoint: "https://script.google.com/macros/s/AKfycbw_J4A9sLLzxRP8GlPMIFNmni_pT9GPC6eZ2aSL3nP-gJt2golTAUQSk5li4_bMUmY/exec",
 
   site: "precious.curo.events",
   brand: "curo.events",
