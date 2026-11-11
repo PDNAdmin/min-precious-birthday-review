@@ -1,0 +1,50 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "fraunces",
+        "createdAt": "2026-11-11T13:42:16.196Z",
+        "reason": "Claude: editorial magazine direction in the user-approved plan names Fraunces"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T13:42:17.185Z",
+        "reason": "Claude: cream/terracotta palette sampled from the celebrant's photos, listed in the user-approved plan"
+      },
+      {
+        "rule": "italic-serif-display",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T13:42:17.953Z",
+        "reason": "Claude: magazine-cover name treatment is the core of the user-approved editorial direction"
+      },
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T13:42:18.720Z",
+        "reason": "Claude: 'You've been invited to review' is the first half of the headline sentence, not a decorative eyebrow"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-11T14:03:53.282Z",
+        "reason": "Claude: decorative aria-hidden washi-tape strip duplicating on-page copy; user asked for playful animation; stops under prefers-reduced-motion"
+      }
+    ]
+  }
+}
