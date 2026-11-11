@@ -19,25 +19,6 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Doodle stickers (placeholders until the generated sticker pack arrives) -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <symbol id="st-star" viewBox="0 0 100 100"><path d="M50 6l12 30 32 3-24 21 8 32-28-17-28 17 8-32L6 39l32-3z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/></symbol>
-      <symbol id="st-heart" viewBox="0 0 100 100"><path d="M50 88C20 66 6 50 8 32 10 16 28 8 41 18c4 3 7 7 9 11 2-4 5-8 9-11 13-10 31-2 33 14 2 18-12 34-42 56z" fill="var(--pink)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/><path d="M24 30c2-6 8-10 14-8" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></symbol>
-      <symbol id="st-sparkle" viewBox="0 0 100 100"><path d="M50 4c4 26 20 42 46 46-26 4-42 20-46 46-4-26-20-42-46-46C30 46 46 30 50 4z" fill="var(--blue)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/></symbol>
-      <symbol id="st-stamp" viewBox="0 0 120 120"><g transform="rotate(-12 60 60)"><circle cx="60" cy="60" r="54" fill="var(--red)" stroke="var(--ink)" stroke-width="5"/><circle cx="60" cy="60" r="43" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="4 5"/><text x="60" y="71" text-anchor="middle" font-family="Rubik Mono One, sans-serif" font-size="27" fill="#fff">10/10</text></g></symbol>
-      <symbol id="st-arrow" viewBox="0 0 140 80"><path d="M8 60C30 20 70 10 100 30c10 7 6 22-6 18-12-4-4-24 16-28 10-2 18 0 24 4" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/><path d="M124 12l12 12-16 4" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="st-eyes" viewBox="0 0 120 70"><ellipse cx="34" cy="35" rx="26" ry="30" fill="#fff" stroke="var(--ink)" stroke-width="5"/><ellipse cx="86" cy="35" rx="26" ry="30" fill="#fff" stroke="var(--ink)" stroke-width="5"/><circle cx="46" cy="40" r="11" fill="var(--ink)"/><circle cx="98" cy="40" r="11" fill="var(--ink)"/></symbol>
-      <symbol id="st-bubble" viewBox="0 0 140 100"><path d="M14 14h112v56H58L30 92l6-22H14z" fill="var(--green)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/><text x="70" y="52" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="34" fill="var(--ink)">honest?</text></symbol>
-      <symbol id="st-cloud" viewBox="0 0 120 80"><path d="M30 70C14 70 6 60 8 48c2-10 12-16 22-14 2-14 14-24 28-24 13 0 24 8 27 20 14-2 27 8 27 21 0 11-9 19-20 19z" fill="#fff" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/></symbol>
-      <symbol id="st-bolt" viewBox="0 0 80 120"><path d="M48 4L10 68h24l-8 48 46-70H46z" fill="var(--orange)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/></symbol>
-      <symbol id="st-crown" viewBox="0 0 120 90"><path d="M10 78l-4-56 30 24L60 8l24 38 30-24-4 56z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/><circle cx="36" cy="62" r="6" fill="var(--pink)" stroke="var(--ink)" stroke-width="3"/><circle cx="60" cy="58" r="6" fill="var(--blue)" stroke="var(--ink)" stroke-width="3"/><circle cx="84" cy="62" r="6" fill="var(--green)" stroke="var(--ink)" stroke-width="3"/></symbol>
-      <symbol id="st-smile" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5"/><circle cx="36" cy="40" r="6" fill="var(--ink)"/><circle cx="64" cy="40" r="6" fill="var(--ink)"/><path d="M30 60c10 14 30 14 40 0" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/></symbol>
-      <symbol id="st-hmm" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="var(--lilac)" stroke="var(--ink)" stroke-width="5"/><circle cx="36" cy="42" r="6" fill="var(--ink)"/><circle cx="64" cy="42" r="6" fill="var(--ink)"/><path d="M32 66h36" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/></symbol>
-      <symbol id="st-flame" viewBox="0 0 90 120"><path d="M45 6c6 22 34 34 34 66 0 24-16 42-34 42S11 96 11 72c0-18 10-26 14-38 4 10 8 14 12 16 2-16 0-30 8-44z" fill="var(--orange)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/><path d="M45 62c4 10 16 16 16 30 0 10-7 16-16 16s-16-6-16-16c0-8 6-12 8-18 2 4 4 6 6 6 0-6 0-12 2-18z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/></symbol>
-      <symbol id="st-squiggle" viewBox="0 0 300 30"><path d="M4 18c18-14 30 14 48 0s30 14 48 0 30 14 48 0 30 14 48 0 30 14 48 0 30 14 48 0" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></symbol>
-    </defs>
-  </svg>
 
   <header class="topbar">
     <a class="brand" href="#" data-home><span class="brand-tile">c</span>curo.events</a>
@@ -128,6 +109,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="config.js"></script>
+  <script src="countries.js"></script>
+  <script src="shared.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

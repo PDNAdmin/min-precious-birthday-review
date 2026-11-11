@@ -44,6 +44,15 @@
         ],
         "createdAt": "2026-11-11T14:03:53.282Z",
         "reason": "Claude: decorative aria-hidden washi-tape strip duplicating on-page copy; user asked for playful animation; stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "wrapped.html"
+        ],
+        "createdAt": "2026-11-11T16:18:03.836Z",
+        "reason": "Claude: user asked for a Spotify-Wrapped-style auto-advancing story; motion is the slides themselves, pausable by hold/space, off under reduced motion"
       }
     ]
   }

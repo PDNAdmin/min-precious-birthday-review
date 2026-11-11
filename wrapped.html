@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Precious Wrapped</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#1B1B1F" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' rx='10' fill='%23FF6FB5' stroke='%231B1B1F' stroke-width='4' transform='rotate(-8 32 32)'/%3E%3Ctext x='32' y='45' font-family='Arial Black,sans-serif' font-size='34' font-weight='900' text-anchor='middle' fill='%231B1B1F'%3EW%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@500..700&family=Rubik+Mono+One&family=Abril+Fatface&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="wrapped.css" />
+  <!-- Remotion (React video framework) loaded as ES modules, no build step needed. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1",
+      "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+      "react-dom": "https://esm.sh/react-dom@18.3.1",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+      "remotion": "https://esm.sh/remotion@4.0.242?external=react,react-dom",
+      "remotion/no-react": "https://esm.sh/remotion@4.0.242/no-react?external=react,react-dom",
+      "@remotion/player": "https://esm.sh/@remotion/player@4.0.242?external=react,react-dom,remotion",
+      "htm": "https://esm.sh/htm@3.1.1"
+    }
+  }
+  </script>
+</head>
+<body class="w-body">
+  <canvas class="w-confetti" aria-hidden="true"></canvas>
+  <p class="demo-flag" hidden>demo mode · sample answers</p>
+
+  <!-- LOGIN -->
+  <section class="w-screen login" id="login" hidden>
+    <div class="login-card">
+      <span class="tape tape-tl" aria-hidden="true"></span>
+      <span class="tape tape-tr" aria-hidden="true"></span>
+      <svg class="sticker login-lock" aria-hidden="true"><use href="#st-lock"/></svg>
+      <h1 class="ransom w-title" data-ransom="0">Precious</h1>
+      <h1 class="ransom w-title w-title-2" data-ransom="5">Wrapped</h1>
+      <form class="login-form" id="login-form" autocomplete="off">
+        <label class="hand login-label" for="passcode">psst… what's the secret word?</label>
+        <div class="paper login-paper"><input class="input-line" id="passcode" type="password" autocomplete="current-password" placeholder="type it here…" required /></div>
+        <p class="form-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit">Unlock my Wrapped <span aria-hidden="true">🔓</span></button>
+        <p class="hand login-hint" hidden>demo passcode: <b>demo</b></p>
+      </form>
+    </div>
+    <img class="cutout login-peek" src="assets/img/sticker-hero.webp" alt="" />
+  </section>
+
+  <!-- MODE PICKER -->
+  <section class="w-screen picker" id="picker" hidden>
+    <p class="hand picker-hi">hey birthday girl ✨</p>
+    <h1 class="ransom w-title" data-ransom="2">Hi Precious</h1>
+    <p class="picker-sub"><b class="js-count">0</b> people wrote about you. How do you want to read it?</p>
+    <div class="picker-grid">
+      <button class="mode-card mode-story" type="button" data-mode="story">
+        <span class="tape tape-tl" aria-hidden="true"></span>
+        <svg class="sticker mode-icon" aria-hidden="true"><use href="#st-play"/></svg>
+        <span class="mode-name">Play my Wrapped</span>
+        <span class="hand mode-desc">sound on 🎧 like a movie about you</span>
+      </button>
+      <button class="mode-card mode-board" type="button" data-mode="board">
+        <span class="tape tape-tr" aria-hidden="true"></span>
+        <svg class="sticker mode-icon" aria-hidden="true"><use href="#st-letter"/></svg>
+        <span class="mode-name">Open my board</span>
+        <span class="hand mode-desc">read everything at your own pace</span>
+      </button>
+    </div>
+    <button class="btn-link" type="button" data-logout>log out</button>
+  </section>
+
+  <!-- STORY (Remotion player mounts here) -->
+  <section class="w-screen story" id="story" hidden>
+    <div class="story-host"></div>
+  </section>
+
+  <!-- BOARD -->
+  <section class="w-screen board" id="board" hidden>
+    <header class="board-head">
+      <div class="board-titles">
+        <p class="hand board-hi">for your eyes only 💌</p>
+        <h1 class="board-title">Your board</h1>
+        <p class="board-meta"></p>
+      </div>
+      <div class="board-actions">
+        <button class="b-btn b-primary" type="button" data-mode="story">▶ Play Wrapped</button>
+        <button class="b-btn" type="button" data-refresh>↻ Refresh</button>
+        <button class="b-btn" type="button" data-sync>⇣ Sync backup</button>
+        <button class="b-btn" type="button" data-logout>Log out</button>
+      </div>
+    </header>
+
+    <div class="board-overview"></div>
+
+    <div class="board-tools">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="answers">Answers</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="people">People</button>
+      </div>
+      <div class="chips" role="group" aria-label="Filter by relationship"></div>
+      <div class="tools-right">
+        <label class="search"><span aria-hidden="true">🔍</span><input type="search" placeholder="Search answers…" aria-label="Search answers" /></label>
+        <button class="chip fav-toggle" type="button" aria-pressed="false">♥ Favourites</button>
+      </div>
+    </div>
+
+    <div class="board-main">
+      <nav class="q-nav" aria-label="Jump to a question"></nav>
+      <div class="board-body"></div>
+    </div>
+  </section>
+
+  <dialog class="letter-dialog" id="letter">
+    <div class="letter">
+      <button class="sheet-close" type="button" data-close aria-label="Close">×</button>
+      <div class="letter-body"></div>
+    </div>
+  </dialog>
+
+  <div class="toast" role="status" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <script src="config.js"></script>
+  <script src="countries.js"></script>
+  <script src="shared.js"></script>
+  <script type="module" src="wrapped.js"></script>
+</body>
+</html>

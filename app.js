@@ -2,8 +2,7 @@
   const cfg = window.REVIEW_CONFIG;
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hasGsap = typeof window.gsap !== "undefined" && !RM;
+  const { RM, hasGsap, esc, cssVar, confetti, dropTiles, ransomify, responseId } = window.CURO;
   const STORE = `curo-review:${cfg.name.toLowerCase()}`;
 
   // ---------- state ----------
@@ -16,7 +15,6 @@
   const tpl = (s = "") =>
     s.replace(/\{\{(\w+)\}\}/g, (_, k) =>
       k === "name" ? cfg.name : k === "role" ? (rel()?.role || "friend") : cfg.pronoun[k] ?? "");
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const strip = (html) => html.replace(/<[^>]+>/g, "");
 
   // ---------- steps ----------
@@ -26,18 +24,17 @@
     ...cfg.questions.map((q) => ({ kind: q.type, section: q.section, q })),
     { kind: "review", section: "warm" },
   ];
-  const sectionLabel = { warm: "THE RATINGS ⭐", deep: "REAL TALK 💬", spicy: "SPICY ROUND 🌶️" };
+  const sectionLabel = { intro: "ABOUT YOU 👋", warm: "THE RATINGS ⭐", deep: "REAL TALK 💬", spicy: "SPICY ROUND 🌶️" };
 
   // ---------- rendering ----------
   const flow = $("#flow");
   const progress = $(".progress span");
   let current = state.step;
 
-  const SCRAPS = { warm: ["--yellow", "--orange"], deep: ["--blue", "--lilac", "--green"], spicy: ["--pink", "--red"] };
+  const SCRAPS = { intro: ["--blue", "--green"], warm: ["--yellow", "--orange"], deep: ["--blue", "--lilac", "--green"], spicy: ["--pink", "--red"] };
   const PHOTOS = Object.values(cfg.photos);
   const RATE_COLORS = ["--lilac", "--lilac", "--blue", "--blue", "--green", "--green", "--yellow", "--orange", "--pink", "--red"];
   const REL_COLORS = ["--pink", "--yellow", "--blue", "--green", "--orange", "--lilac", "#fff"];
-  const cssVar = (v) => (v.startsWith("--") ? `var(${v})` : v);
   let renderIdx = 0;
 
   function scrap(title, sub = "") {
@@ -45,11 +42,9 @@
     const list = SCRAPS[step.section] || SCRAPS.warm;
     const color = step.q?.id === "note" ? "--orange" : step.kind === "review" ? "--green" : list[renderIdx % list.length];
     const tilt = renderIdx % 2 ? "1deg" : "-1.2deg";
-    const photo = PHOTOS[renderIdx % PHOTOS.length];
     return `<div class="scrap" style="--scrap:${cssVar(color)};--tilt:${tilt}">
         <span class="tape tape-tl" aria-hidden="true"></span>
         <h2 class="q-title" id="qt">${title}</h2>${sub}
-        <figure class="mini-pol" aria-hidden="true"><img src="${photo}" alt="" /><span class="slap-slot"></span></figure>
       </div>`;
   }
 
@@ -59,9 +54,10 @@
     el.className = "screen q-screen";
     el.dataset.screen = "step";
     const n = i + 1, total = steps.length - 1;
+    const pol = `<figure class="mini-pol" aria-hidden="true"><img src="${PHOTOS[i % PHOTOS.length]}" alt="" /><span class="slap-slot"></span></figure>`;
     const count = step.kind === "review"
-      ? `<div class="q-count"><span class="label-tape">ALMOST DONE</span></div>`
-      : `<div class="q-count"><span class="label-tape">${String(n).padStart(2, "0")} / ${total}</span>${step.q ? `<span class="label-tape alt">${step.q.id === "note" ? "FINAL WORD ✍️" : sectionLabel[step.section]}</span>` : ""}</div>`;
+      ? `<div class="q-count"><span class="label-tape">ALMOST DONE</span>${pol}</div>`
+      : `<div class="q-count"><span class="label-tape">${String(n).padStart(2, "0")} / ${total}</span>${step.q ? `<span class="label-tape alt">${step.q.id === "note" ? "NOTE / PRAYER 🙏" : sectionLabel[step.section]}</span>` : ""}${pol}</div>`;
     el.innerHTML = `<div class="q-wrap">${count}${body(step)}<p class="form-error" role="alert" hidden></p>${actions(step)}</div>
       ${i > 0 ? `<button class="q-back" type="button" data-back>← back</button>` : `<button class="q-back" type="button" data-home>← intro</button>`}`;
     return el;
@@ -88,6 +84,42 @@
           <div class="rate-scale"><span>nope 🙈</span><span>absolutely!! 🔥</span></div>
           <div class="reaction" aria-live="polite">${v ? reaction(v) : ""}</div>`;
       }
+      case "place": {
+        const C = window.COUNTRIES;
+        const cur = state.answers.country || "Nigeria";
+        const opt = (c) => `<option value="${esc(c.name)}" ${c.name === cur ? "selected" : ""}>${C.flag(c.code)}  ${esc(c.name)}</option>`;
+        return `${scrap(tpl(q.q))}
+          <div class="field-grid">
+            <label class="f-label" for="f-country">Country</label>
+            <div class="select-wrap"><select id="f-country" class="big-select">
+              <optgroup label="Popular">${C.popular.map(opt).join("")}</optgroup>
+              <optgroup label="All countries">${C.all.map(opt).join("")}</optgroup>
+            </select></div>
+            <label class="f-label" for="f-city">City / location</label>
+            <div class="answer paper"><input class="input-line" id="f-city" autocomplete="address-level2" placeholder="e.g. Lekki, Lagos" value="${esc(state.answers.city || "")}" maxlength="80" /></div>
+          </div>`;
+      }
+      case "met": {
+        const yr = state.answers.metYear || "";
+        const now = new Date().getFullYear();
+        const years = [...Array.from({ length: now - 1984 }, (_, k) => String(now - k)), "Before 1985", "Since day one 👶"];
+        return `${scrap(tpl(q.q))}
+          <div class="field-grid">
+            <span class="f-label" id="yr-label">Year</span>
+            <div class="ydrop">
+              <button type="button" class="ydrop-btn" id="f-year" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="yr-label f-year">
+                <span class="ydrop-val">${yr ? esc(yr) : "Pick a year"}</span><b aria-hidden="true">▾</b>
+              </button>
+              <div class="ydrop-pop" hidden>
+                <ul class="ydrop-list" role="listbox" aria-labelledby="yr-label" tabindex="-1">
+                  ${years.map((y) => `<li role="option" tabindex="-1" data-year="${esc(y)}" aria-selected="${y === yr}" class="${y.length > 4 ? "wide" : ""}">${esc(y)}</li>`).join("")}
+                </ul>
+              </div>
+            </div>
+            <label class="f-label" for="f-ans">How did you meet?</label>
+            <div class="answer paper"><textarea class="input-area" id="f-ans" rows="2" placeholder="${esc(tpl(q.placeholder || ""))}" maxlength="600">${esc(state.answers.metHow || "")}</textarea></div>
+          </div>`;
+      }
       case "short":
         return `${scrap(tpl(q.q))}
           <div class="answer paper"><input class="input-line" id="f-ans" placeholder="${esc(tpl(q.placeholder || ""))}" value="${esc(state.answers[q.id] || "")}" aria-labelledby="qt" maxlength="200" /></div>`;
@@ -99,6 +131,8 @@
           let label, val;
           if (s.kind === "name") { label = "From"; val = state.anonymous ? "Anonymous 🤫" : state.name; }
           else if (s.kind === "rel") { label = "Relationship"; val = rel()?.label || "—"; }
+          else if (s.kind === "place") { label = "Writing from"; val = [state.answers.city, state.answers.country].filter(Boolean).join(", ") || "—"; }
+          else if (s.kind === "met") { label = `Met ${cfg.name}`; val = [state.answers.metYear, state.answers.metHow].filter(Boolean).join(" · ") || "—"; }
           else { label = strip(tpl(s.q.q)); const a = state.answers[s.q.id]; val = a === undefined || a === "" ? "skipped" : s.kind === "rating" ? `${a}/10` : a; }
           return `<li><button type="button" data-jump="${i}"><span class="rq">${esc(label)}</span></button><span class="ra">${esc(val)}</span></li>`;
         }).join("");
@@ -148,7 +182,7 @@
       const paper = $(".paper, .review-list", nextEl);
       if (paper) gsap.from(paper, { y: 30, opacity: 0, duration: 0.5, ease: "power3.out", delay: 0.3 });
       const items = $$(".rel-card, .rate-btn", nextEl);
-      if (items.length) gsap.from(items, { y: 24, opacity: 0, scale: 0.6, stagger: 0.035, duration: 0.5, ease: "back.out(2.6)", delay: 0.3 });
+      if (items.length) gsap.from(items, { y: 18, opacity: 0, stagger: 0.035, duration: 0.45, ease: "power3.out", delay: 0.25, clearProps: "transform,opacity" });
     }
   }
 
@@ -191,6 +225,13 @@
       if (!state.anonymous && !state.name) return "Add your name, or switch on anonymous.";
     } else if (step.kind === "rel") {
       if (!state.relationship) return `Pick one. How do you know ${cfg.name}?`;
+    } else if (step.kind === "place") {
+      state.answers.country = $("#f-country", el).value;
+      state.answers.city = $("#f-city", el).value.trim();
+      if (!state.answers.country) return "Pick your country 🌍";
+    } else if (step.kind === "met") {
+      state.answers.metHow = $("#f-ans", el).value.trim();
+      if (!state.answers.metYear) return "Pick the year you met. A rough guess is fine!";
     } else if (step.kind === "rating") {
       if (!state.answers[step.q.id]) return "Tap a number from 1 to 10.";
     } else if (step.kind === "short" || step.kind === "text") {
@@ -220,6 +261,10 @@
       } else if (t.dataset.rate) setRating(el, step, +t.dataset.rate);
     });
 
+    $("#f-country", el)?.addEventListener("change", () => { persistInput(el, step); $(".form-error", el).hidden = true; });
+    const yd = $(".ydrop", el);
+    if (yd) bindYearDrop(yd, el);
+
     const anon = $("#f-anon", el);
     anon?.addEventListener("change", () => {
       state.anonymous = anon.checked;
@@ -238,9 +283,45 @@
     });
   }
 
+  // Custom year dropdown: button + popover grid listbox, keyboard friendly.
+  function bindYearDrop(yd, el) {
+    const btn = $(".ydrop-btn", yd), pop = $(".ydrop-pop", yd), opts = $$("[role=option]", yd);
+    const open = (v) => {
+      pop.hidden = !v; btn.setAttribute("aria-expanded", v);
+      if (v) {
+        const sel = opts.find((o) => o.getAttribute("aria-selected") === "true") || opts[0];
+        sel.focus(); sel.scrollIntoView({ block: "center" });
+        if (hasGsap) gsap.from(pop, { y: -10, opacity: 0, scale: 0.96, duration: 0.25, ease: "back.out(2)" });
+      }
+    };
+    const choose = (o) => {
+      state.answers.metYear = o.dataset.year; save();
+      opts.forEach((x) => x.setAttribute("aria-selected", x === o));
+      $(".ydrop-val", yd).textContent = o.dataset.year;
+      $(".form-error", el).hidden = true;
+      open(false); btn.focus();
+      if (hasGsap) gsap.fromTo(btn, { scale: 1.06 }, { scale: 1, duration: 0.35, ease: "back.out(3)" });
+    };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); open(pop.hidden); });
+    pop.addEventListener("click", (e) => { const o = e.target.closest("[role=option]"); if (o) choose(o); });
+    pop.addEventListener("keydown", (e) => {
+      const i = opts.indexOf(document.activeElement);
+      const cols = Math.max(1, Math.round(pop.clientWidth / (opts[0].offsetWidth + 6)));
+      const move = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols }[e.key];
+      if (move) { e.preventDefault(); opts[Math.max(0, Math.min(opts.length - 1, i + move))].focus(); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (i >= 0) choose(opts[i]); }
+      else if (e.key === "Escape") { open(false); btn.focus(); }
+    });
+    document.addEventListener("click", (e) => { if (!yd.contains(e.target)) open(false); });
+  }
+
   function persistInput(el, step) {
     const f = $("#f-ans", el);
-    if (f && step.q) state.answers[step.q.id] = f.value;
+    if (f && step.kind === "met") state.answers.metHow = f.value;
+    else if (f && step.q) state.answers[step.q.id] = f.value;
+    const c = $("#f-country", el), city = $("#f-city", el);
+    if (c) state.answers.country = c.value;
+    if (city) state.answers.city = city.value;
     const n = $("#f-name", el);
     if (n) state.name = n.value;
     save();
@@ -274,18 +355,43 @@
   });
 
   // ---------- network ----------
+  // Firestore REST value encoding (keeps the form free of the Firebase SDK).
+  const fsValue = (v) =>
+    typeof v === "number" ? (Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v })
+    : typeof v === "boolean" ? { booleanValue: v }
+    : v && typeof v === "object" ? { mapValue: { fields: fsFields(v) } }
+    : { stringValue: String(v ?? "") };
+  const fsFields = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, fsValue(v)]));
+
+  async function saveFirestore(payload) {
+    const { projectId, apiKey } = cfg.firebase;
+    const { type, ...data } = payload;
+    const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/responses?documentId=${responseId(payload.submittedAt)}&key=${apiKey}`;
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields: fsFields({ ...data, source: "form" }) }) });
+    if (!res.ok && res.status !== 409) throw new Error(`Firestore ${res.status}`);
+  }
+
+  function saveSheet(payload) {
+    // text/plain + no-cors keeps this a "simple" request Apps Script accepts without a preflight.
+    return fetch(cfg.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+  }
+
+  // Main store is Firestore; the Google Sheet is the backup. Either one succeeding is enough.
   async function send(payload) {
-    if (!cfg.endpoint) {
-      console.warn("[review] No endpoint set: saved locally only.", payload);
+    const jobs = [];
+    if (cfg.firebase?.projectId) jobs.push(saveFirestore(payload));
+    if (cfg.endpoint) jobs.push(saveSheet(payload));
+    if (!jobs.length) {
+      console.warn("[review] No backend configured: saved locally only.", payload);
       try {
         const k = `${STORE}:outbox`;
         localStorage.setItem(k, JSON.stringify([...(JSON.parse(localStorage.getItem(k)) || []), payload]));
       } catch {}
-      await new Promise((r) => setTimeout(r, 500));
       return;
     }
-    // text/plain + no-cors keeps this a "simple" request Apps Script accepts without a preflight.
-    await fetch(cfg.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+    const results = await Promise.allSettled(jobs);
+    results.filter((r) => r.status === "rejected").forEach((r) => console.warn("[review] one store failed:", r.reason));
+    if (results.every((r) => r.status === "rejected")) throw results[0].reason;
   }
 
   async function submit(el, btn) {
@@ -294,7 +400,11 @@
     btn.innerHTML = "Sealing…";
     const r = rel();
     const answers = {};
-    cfg.questions.forEach((q) => (answers[q.id] = state.answers[q.id] ?? ""));
+    cfg.questions.forEach((q) => {
+      if (q.type === "place") { answers.country = state.answers.country || ""; answers.city = state.answers.city || ""; }
+      else if (q.type === "met") { answers.metYear = state.answers.metYear || ""; answers.metHow = state.answers.metHow || ""; }
+      else answers[q.id] = state.answers[q.id] ?? "";
+    });
     try {
       await send({
         type: "response",
@@ -335,37 +445,6 @@
     });
   }
 
-  function confetti(canvas) {
-    if (RM) return;
-    const ctx = canvas.getContext("2d");
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    const W = (canvas.width = innerWidth * dpr), H = (canvas.height = innerHeight * dpr);
-    const colors = ["#FFD43B", "#FF6FB5", "#5AA9FF", "#35D49C", "#FF8A3D", "#B8A1FF", "#1B1B1F"];
-    const parts = Array.from({ length: 170 }, () => ({
-      x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.45,
-      vx: (Math.random() - 0.5) * 22 * dpr, vy: (-Math.random() * 22 - 8) * dpr,
-      w: (6 + Math.random() * 8) * dpr, h: (8 + Math.random() * 10) * dpr,
-      r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
-      c: colors[(Math.random() * colors.length) | 0], shape: Math.random() < 0.3 ? 1 : 0,
-    }));
-    const start = performance.now();
-    (function frame(t) {
-      ctx.clearRect(0, 0, W, H);
-      const life = (t - start) / 1000;
-      parts.forEach((p) => {
-        p.vy += 0.6 * dpr; p.vx *= 0.985; p.vy *= 0.985;
-        p.x += p.vx; p.y += p.vy; p.r += p.vr;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
-        ctx.globalAlpha = Math.max(0, 1 - Math.max(0, life - 2.6));
-        ctx.fillStyle = p.c;
-        if (p.shape) { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, 7); ctx.fill(); }
-        else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2)));
-        ctx.restore();
-      });
-      if (life < 3.8) requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
-    })(start);
-  }
-
   // ---------- request your own link ----------
   $$("[data-request-link]").forEach((a) => (a.href = cfg.requestUrl));
   document.addEventListener("click", (e) => {
@@ -373,23 +452,7 @@
   });
 
   // ---------- ransom-note letters ----------
-  const TILE_BG = ["--yellow", "--pink", "--blue", "#fff", "--green", "--orange", "--lilac", "--ink"];
-  const TILE_FONT = [0, 1, 2, 3, 1, 0, 3, 2];
-  const TILE_ROT = [-6, 4, -3, 7, -5, 3, -7, 5];
-  $$("[data-ransom]").forEach((h, hi) => {
-    const text = h.textContent.trim();
-    h.setAttribute("aria-label", text);
-    h.innerHTML = [...text].map((c, i) => {
-      const k = i + hi * 3;
-      const bg = TILE_BG[k % TILE_BG.length];
-      return `<span class="tile f${TILE_FONT[k % 8]}" aria-hidden="true" style="background:${cssVar(bg)};color:${bg === "--ink" ? "#fff" : "var(--ink)"};transform:rotate(${TILE_ROT[k % 8]}deg)">${esc(c)}</span>`;
-    }).join("");
-    if (hasGsap) $$(".tile", h).forEach((t) =>
-      t.addEventListener("mouseenter", () => gsap.to(t, { y: -8, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out" })));
-  });
-  function dropTiles(tiles) {
-    return gsap.from(tiles, { y: -120, scale: 2, opacity: 0, rotate: () => gsap.utils.random(-60, 60), stagger: 0.07, duration: 0.6, ease: "back.out(1.7)" });
-  }
+  $$("[data-ransom]").forEach((h, hi) => ransomify(h, hi * 3));
 
   // ---------- draggable stickers ----------
   if (window.gsap) $$(".drag").forEach((s) => {

@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reviews: anyone can add one, only Precious can read them, nobody can edit or delete.
+    match /responses/{id} {
+      allow read: if request.auth != null
+                  && request.auth.token.email == "precious@curo.events";
+
+      allow create: if id.matches('r_[0-9]{10,20}')
+        && request.resource.data.keys().hasOnly(
+             ['for', 'submittedAt', 'name', 'anonymous', 'relationship', 'answers', 'source'])
+        && request.resource.data.submittedAt is string
+        && request.resource.data.name is string && request.resource.data.name.size() <= 120
+        && request.resource.data.relationship is string && request.resource.data.relationship.size() <= 60
+        && request.resource.data.answers is map
+        && request.resource.data.answers.size() <= 40;
+
+      allow update, delete: if false;
+    }
+  }
+}
